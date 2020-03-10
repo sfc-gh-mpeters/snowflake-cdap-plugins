@@ -123,7 +123,6 @@ public class SnowflakeAccessor {
       dataSource.setOauthToken(accessToken);
     } else if (config.getKeyPairEnabled()) {
       dataSource.setUser(config.getUsername());
-      dataSource.setAccount(config.getAccountName());
 
       String privateKeyPath = writeTextToTmpFile(config.getPrivateKey());
       try {
