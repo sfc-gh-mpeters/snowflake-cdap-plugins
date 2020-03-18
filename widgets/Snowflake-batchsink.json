@@ -134,7 +134,7 @@
           "name": "maxFileSize",
           "widget-attributes": {
             "min": "0",
-            "default": "60000"
+            "default": "0"
           }
         },
         {

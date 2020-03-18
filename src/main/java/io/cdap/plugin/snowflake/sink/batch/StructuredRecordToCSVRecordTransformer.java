@@ -92,7 +92,7 @@ public class StructuredRecordToCSVRecordTransformer {
           instant = Instant.ofEpochMilli((Long) value);
           return instant.atZone(ZoneOffset.UTC).toLocalTime().toString();
         case DECIMAL:
-          return record.getDecimal(field.getName()).unscaledValue().toString();
+          return record.getDecimal(field.getName()).toString();
         default:
           throw new IllegalArgumentException(
             String.format("Field '%s' is of unsupported type '%s'", field.getName(), logicalType.getToken()));

@@ -31,7 +31,11 @@ import java.util.UUID;
  */
 public class SnowflakeSinkAccessor extends SnowflakeAccessor {
   private static final Logger LOG = LoggerFactory.getLogger(SnowflakeSinkAccessor.class);
-  private static final String POPULATE_TABLE_STAGE = "copy into %s file_format = (type = csv skip_header = 1);";
+  private static final String POPULATE_TABLE_STAGE = "COPY INTO %s FROM %s " +
+    "FILE_FORMAT=(" +
+    "TYPE='CSV' " +
+    "FIELD_OPTIONALLY_ENCLOSED_BY='\"' " +
+    "SKIP_HEADER = 1)";
 
   private static final String DEST_FILE_NAME = "cdapRecords_%s.csv";
   private final SnowflakeSinkConfig config;
@@ -41,13 +45,13 @@ public class SnowflakeSinkAccessor extends SnowflakeAccessor {
     this.config = config;
   }
 
-  public void uploadStream(InputStream inputStream) throws IOException {
+  public void uploadStream(InputStream inputStream, String stageDir) throws IOException {
     // file name needs to be unique across all the nodes.
     String filename = String.format(DEST_FILE_NAME, UUID.randomUUID().toString());
     LOG.info("Uploading file '{}' to table stage", filename);
 
     try (Connection connection = dataSource.getConnection()) {
-      connection.unwrap(SnowflakeConnection.class).uploadStream("%" + config.getTableName(),
+      connection.unwrap(SnowflakeConnection.class).uploadStream(stageDir,
                                                                 null,
                                                                 inputStream, filename, true);
     } catch (SQLException e) {
@@ -55,8 +59,12 @@ public class SnowflakeSinkAccessor extends SnowflakeAccessor {
     }
   }
 
-  public void populateTable() throws IOException {
-    String populateStatement = String.format(POPULATE_TABLE_STAGE, config.getTableName());
+  public void populateTable(String destinationStagePath) throws IOException {
+    String populateStatement = String.format(POPULATE_TABLE_STAGE, config.getTableName(), destinationStagePath);
     runSQL(populateStatement);
+  }
+
+  public void removeDirectory(String path) throws IOException {
+    runSQL(String.format("remove %s", path));
   }
 }

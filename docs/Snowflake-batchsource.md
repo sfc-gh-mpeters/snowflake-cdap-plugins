@@ -16,8 +16,8 @@ Configuration
 
 **Reference Name:** Uniquely identified name for lineage.
 
-**Account Name:** Full name of Snowflake account. Usually it is the begining of
-your instance url: `https://<account_name>.snowflakecomputing.com/`
+**Account Name:** Snowflake account name and region and possibly a cloud specifier. (Part of the URL you use to 
+log in to Snowflake, minus the "snowflakecomputing.com"). E.g. "myaccount.us-central1.gcp".
 
 **Database:** Database name to connect to.
 
@@ -60,6 +60,7 @@ For more info see [Introduction to OAuth in Snowflake](https://docs.snowflake.ne
 
 ### Advanced
 
-**Maximum Split Size:** Maximum split size specified in bytes. If value is set to 0, then result is split by snowflake. Default is 0.
+**Maximum Split Size:** Maximum split size specified in bytes. If value is set to 0, then result is not split by 
+snowflake.
 
 **Connection Arguments:** List of arbitrary string tag/value pairs as connection arguments. See: [JDBC Driver Connection String.](https://docs.snowflake.net/manuals/user-guide/jdbc-configure.html#jdbc-driver-connection-string)

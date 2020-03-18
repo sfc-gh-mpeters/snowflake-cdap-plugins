@@ -68,8 +68,9 @@ public class SchemaHelper {
       }
       return getSchema(snowflakeAccessor, importQuery);
     } catch (SchemaParseException e) {
-      collector.addFailure("Unable to retrieve output schema.",
+      collector.addFailure(String.format("Unable to retrieve output schema. Reason: '%s'", e.getMessage()),
                            null)
+        .withStacktrace(e.getStackTrace())
         .withConfigProperty(SnowflakeBatchSourceConfig.PROPERTY_SCHEMA);
       return null;
     }
@@ -161,6 +162,15 @@ public class SchemaHelper {
       return true;
     }
 
+    if (isFieldNumeric(field1) && isFieldNumeric(field2)) {
+      return true;
+    }
+
     return field1.equals(field2);
+  }
+
+  private static boolean isFieldNumeric(Schema field1) {
+    return Objects.equals(field1.getType(), Schema.Type.INT) || Objects.equals(field1.getType(), Schema.Type.LONG)
+      || Objects.equals(field1.getLogicalType(), Schema.LogicalType.DECIMAL);
   }
 }

@@ -82,7 +82,7 @@ public class SnowflakeMapToRecordTransformer {
         case TIME_MICROS:
           return TimeUnit.NANOSECONDS.toMicros(LocalTime.parse(String.valueOf(value)).toNanoOfDay());
         case DECIMAL:
-          return new BigDecimal(String.valueOf(value)).unscaledValue().toByteArray();
+          return new BigDecimal(String.valueOf(value)).setScale(fieldSchema.getScale()).unscaledValue().toByteArray();
         default:
           throw new IllegalArgumentException(
             String.format("Field '%s' is of unsupported type '%s'", fieldName, logicalType.getToken()));

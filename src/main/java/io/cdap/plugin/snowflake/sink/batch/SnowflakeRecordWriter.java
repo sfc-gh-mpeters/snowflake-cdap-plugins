@@ -40,9 +40,11 @@ public class SnowflakeRecordWriter extends RecordWriter<NullWritable, CSVRecord>
   private final CSVBuffer csvBufferSizeCheck;
   private final SnowflakeSinkConfig config;
   private final SnowflakeSinkAccessor snowflakeAccessor;
+  private final String destinationStagePath;
 
   public SnowflakeRecordWriter(TaskAttemptContext taskAttemptContext) throws IOException {
     Configuration conf = taskAttemptContext.getConfiguration();
+    destinationStagePath = conf.get(SnowflakeOutputFormat.DESTINATION_STAGE_PATH_PROPERTY);
     String configJson = conf.get(
       SnowflakeOutputFormatProvider.PROPERTY_CONFIG_JSON);
     config = GSON.fromJson(
@@ -58,7 +60,7 @@ public class SnowflakeRecordWriter extends RecordWriter<NullWritable, CSVRecord>
     csvBufferSizeCheck.reset();
     csvBufferSizeCheck.write(csvRecord);
 
-    if (csvBuffer.size() + csvBufferSizeCheck.size() > config.getMaxFileSize()) {
+    if (config.getMaxFileSize() > 0 && csvBuffer.size() + csvBufferSizeCheck.size() > config.getMaxFileSize()) {
       submitCurrentBatch();
     }
 
@@ -68,7 +70,7 @@ public class SnowflakeRecordWriter extends RecordWriter<NullWritable, CSVRecord>
   private void submitCurrentBatch() throws IOException {
     if (csvBuffer.getRecordsCount() != 0) {
       InputStream csvInputStream = new ByteArrayInputStream(csvBuffer.getByteArray());
-      snowflakeAccessor.uploadStream(csvInputStream);
+      snowflakeAccessor.uploadStream(csvInputStream, destinationStagePath);
 
       csvBuffer.reset();
     }

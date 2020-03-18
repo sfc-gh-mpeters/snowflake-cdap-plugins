@@ -16,8 +16,8 @@ Configuration
 
 **Reference Name:** Uniquely identified name for lineage.
 
-**Account Name:** Full name of Snowflake account. Usually it is the begining of
-your instance url: `https://<account_name>.snowflakecomputing.com/`
+**Account Name:** Snowflake account name and region and possibly a cloud specifier. (Part of the URL you use to 
+log in to Snowflake, minus the "snowflakecomputing.com"). E.g. "myaccount.us-central1.gcp".
 
 **Database:** Database name to connect to.
 

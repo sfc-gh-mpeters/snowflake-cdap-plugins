@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * An OutputFormat that sends the output of a Hadoop job to the Snowflake record writer, also
@@ -37,6 +38,9 @@ public class SnowflakeOutputFormat extends OutputFormat<NullWritable, CSVRecord>
 
   private static final Logger LOG = LoggerFactory.getLogger(SnowflakeOutputFormat.class);
   private static final Gson GSON = new GsonBuilder().create();
+
+  private static final String DESTINATION_STAGE_PATH = "@~/cdap_stage/sinkoutput" + UUID.randomUUID() + "/";
+  public static final String DESTINATION_STAGE_PATH_PROPERTY = "cdap.dest.stage.path";
 
   @Override
   public RecordWriter<NullWritable, CSVRecord> getRecordWriter(TaskAttemptContext taskAttemptContext)
@@ -58,6 +62,9 @@ public class SnowflakeOutputFormat extends OutputFormat<NullWritable, CSVRecord>
     return new OutputCommitter() {
       @Override
       public void setupJob(JobContext jobContext) {
+        Configuration conf = jobContext.getConfiguration();
+        conf.set(DESTINATION_STAGE_PATH_PROPERTY, DESTINATION_STAGE_PATH);
+        LOG.info(String.format("Writing data to '%s'", DESTINATION_STAGE_PATH));
       }
 
       @Override
@@ -68,8 +75,11 @@ public class SnowflakeOutputFormat extends OutputFormat<NullWritable, CSVRecord>
         SnowflakeSinkConfig config = GSON.fromJson(
           configJson, SnowflakeSinkConfig.class);
 
+        String destinationStagePath = conf.get(DESTINATION_STAGE_PATH_PROPERTY);
+
         SnowflakeSinkAccessor snowflakeAccessor = new SnowflakeSinkAccessor(config);
-        snowflakeAccessor.populateTable();
+        snowflakeAccessor.populateTable(destinationStagePath);
+        snowflakeAccessor.removeDirectory(destinationStagePath);
       }
 
       @Override

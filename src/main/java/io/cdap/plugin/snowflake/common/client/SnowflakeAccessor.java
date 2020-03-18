@@ -25,31 +25,22 @@ import io.cdap.plugin.snowflake.common.exception.ConnectionTimeoutException;
 import io.cdap.plugin.snowflake.common.util.QueryUtil;
 import net.snowflake.client.jdbc.SnowflakeBasicDataSource;
 import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
-import javax.crypto.EncryptedPrivateKeyInfo;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 /**
  * A class which accesses Snowflake API.
@@ -75,6 +66,8 @@ public class SnowflakeAccessor {
     }
 
   }
+
+  private static final Logger LOG = LoggerFactory.getLogger(SnowflakeAccessor.class);
 
   /**
    * Returns field descriptors for specified import query.
@@ -151,36 +144,6 @@ public class SnowflakeAccessor {
       throw new ConnectionTimeoutException("Cannot create Snowflake connection.", e);
     }
   }
-
-  private PrivateKey getPrivateKey(BaseSnowflakeConfig config) {
-    if (Strings.isNullOrEmpty(config.getPrivateKey())) {
-      throw new IllegalArgumentException("Cannot access the private key.");
-    }
-
-    File file = new File(config.getPrivateKey());
-    try (FileInputStream fileInputStream = new FileInputStream(file);
-         DataInputStream dataInputStream = new DataInputStream(fileInputStream)) {
-
-      byte[] keyBytes = new byte[(int) file.length()];
-      dataInputStream.readFully(keyBytes);
-
-      String encrypted = new String(keyBytes);
-      String passphrase = Strings.isNullOrEmpty(config.getPassphrase())
-        ? ""
-        : config.getPassphrase();
-      encrypted = encrypted.replace("-----BEGIN ENCRYPTED PRIVATE KEY-----", "");
-      encrypted = encrypted.replace("-----END ENCRYPTED PRIVATE KEY-----", "");
-      EncryptedPrivateKeyInfo pkInfo = new EncryptedPrivateKeyInfo(Base64.getMimeDecoder().decode(encrypted));
-      PBEKeySpec keySpec = new PBEKeySpec(passphrase.toCharArray());
-      SecretKeyFactory pbeKeyFactory = SecretKeyFactory.getInstance(pkInfo.getAlgName());
-      PKCS8EncodedKeySpec encodedKeySpec = pkInfo.getKeySpec(pbeKeyFactory.generateSecret(keySpec));
-      KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-      return keyFactory.generatePrivate(encodedKeySpec);
-    } catch (IOException | NoSuchAlgorithmException | InvalidKeyException | InvalidKeySpecException e) {
-      throw new IllegalArgumentException("Cannot access the private key.", e);
-    }
-  }
-
   // SnowflakeBasicDataSource doesn't provide access for additional properties.
   private void addConnectionArguments(SnowflakeBasicDataSource dataSource, String connectionArguments) {
     try {
