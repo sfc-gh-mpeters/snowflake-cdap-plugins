@@ -140,8 +140,8 @@ public class SchemaHelper {
       actualFieldSchema = isActualFieldNullable ? actualFieldSchema.getNonNullable() : actualFieldSchema;
       providedFieldSchema = isProvidedFieldNullable ? providedFieldSchema.getNonNullable() : providedFieldSchema;
 
-      if (!schemasEquals(actualFieldSchema, providedFieldSchema)
-        || !Objects.equals(actualFieldSchema.getLogicalType(), providedFieldSchema.getLogicalType())) {
+      boolean bothNumeric = isFieldNumeric(actualFieldSchema) && isFieldNumeric(providedFieldSchema);
+      if (!bothNumeric && !Objects.equals(actualFieldSchema.getLogicalType(), providedFieldSchema.getLogicalType())) {
           throw new IllegalArgumentException(
             String.format("Expected field '%s' to be of '%s', but it is of '%s'",
                           providedField.getName(), providedFieldSchema, actualFieldSchema)
@@ -152,21 +152,6 @@ public class SchemaHelper {
         throw new IllegalArgumentException(String.format("Field '%s' should be nullable", providedField.getName()));
       }
     }
-  }
-
-  private static boolean schemasEquals(Schema field1, Schema field2) {
-    // Don't compare decimal precisions. If both field are decimal type, it's good enough.
-
-    if (Objects.equals(field1.getLogicalType(), Schema.LogicalType.DECIMAL) &&
-      Objects.equals(field2.getLogicalType(), Schema.LogicalType.DECIMAL)) {
-      return true;
-    }
-
-    if (isFieldNumeric(field1) && isFieldNumeric(field2)) {
-      return true;
-    }
-
-    return field1.equals(field2);
   }
 
   private static boolean isFieldNumeric(Schema field1) {

@@ -33,6 +33,7 @@ public class SnowflakeSinkConfig extends BaseSnowflakeConfig {
   public static final String PROPERTY_REFERENCE_NAME = "referenceName";
   public static final String PROPERTY_TABLE_NAME = "tableName";
   public static final String PROPERTY_MAX_FILE_SIZE = "maxFileSize";
+  public static final String PROPERTY_COPY_OPTIONS = "copyOptions";
 
   private static final String GET_FIELDS_QUERY = "SELECT * FROM %s"; // runs with a limit
 
@@ -49,6 +50,12 @@ public class SnowflakeSinkConfig extends BaseSnowflakeConfig {
   @Description("Maximum file size used to write data to Snowflake specified in bytes.")
   @Macro
   private Long maxFileSize;
+
+  @Name(PROPERTY_COPY_OPTIONS)
+  @Description("List of arbitrary copy options")
+  @Macro
+  @Nullable
+  private String copyOptions;
 
   public SnowflakeSinkConfig(String referenceName, String accountName, String database,
                              String schemaName, String username, String password,
@@ -71,6 +78,11 @@ public class SnowflakeSinkConfig extends BaseSnowflakeConfig {
 
   public String getReferenceName() {
     return referenceName;
+  }
+
+  public String getCopyOptions() {
+    String copyOptions = (this.copyOptions == null) ? "" : this.copyOptions;
+    return copyOptions.replace(",", " ").replace(":", "=");
   }
 
   public void validate(Schema inputSchema, FailureCollector failureCollector) {

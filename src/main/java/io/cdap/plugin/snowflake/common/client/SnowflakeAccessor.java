@@ -62,7 +62,7 @@ public class SnowflakeAccessor {
          PreparedStatement populateStmt = connection.prepareStatement(query);) {
       populateStmt.execute();
     } catch (SQLException e) {
-      throw new IOException(e);
+      throw new IOException(String.format("Statement '%s' failed.", query), e);
     }
 
   }

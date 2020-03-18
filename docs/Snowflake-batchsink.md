@@ -63,5 +63,8 @@ For more info see [Introduction to OAuth in Snowflake](https://docs.snowflake.ne
 **Maximum File Size:** Maximum size of temporary file in table stage used by plugin as temporary location,
 before populating the data to table.
 
+**Copy Options:** List of arbitrary copy options. See 
+[Copy Options.](https://docs.snowflake.net/manuals/sql-reference/sql/copy-into-table.html#copy-options-copyoptions)
+
 **Connection Arguments:** List of arbitrary string tag/value pairs as connection arguments. See: 
 [JDBC Driver Connection String.](https://docs.snowflake.net/manuals/user-guide/jdbc-configure.html#jdbc-driver-connection-string)

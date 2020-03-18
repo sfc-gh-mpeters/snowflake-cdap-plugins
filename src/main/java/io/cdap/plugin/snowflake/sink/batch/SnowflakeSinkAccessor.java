@@ -35,7 +35,7 @@ public class SnowflakeSinkAccessor extends SnowflakeAccessor {
     "FILE_FORMAT=(" +
     "TYPE='CSV' " +
     "FIELD_OPTIONALLY_ENCLOSED_BY='\"' " +
-    "SKIP_HEADER = 1)";
+    "SKIP_HEADER = 1) %s";
 
   private static final String DEST_FILE_NAME = "cdapRecords_%s.csv";
   private final SnowflakeSinkConfig config;
@@ -60,7 +60,8 @@ public class SnowflakeSinkAccessor extends SnowflakeAccessor {
   }
 
   public void populateTable(String destinationStagePath) throws IOException {
-    String populateStatement = String.format(POPULATE_TABLE_STAGE, config.getTableName(), destinationStagePath);
+    String populateStatement = String.format(POPULATE_TABLE_STAGE, config.getTableName(),
+                                             destinationStagePath, config.getCopyOptions());
     runSQL(populateStatement);
   }
 

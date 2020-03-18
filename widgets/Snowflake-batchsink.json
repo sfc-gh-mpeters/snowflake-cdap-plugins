@@ -139,6 +139,16 @@
         },
         {
           "widget-type": "keyvalue",
+          "label": "Copy Options",
+          "name": "copyOptions",
+          "widget-attributes": {
+            "showDelimiter": "false",
+            "key-placeholder": "Copy Option",
+            "value-placeholder": "Connection Option Value"
+          }
+        },
+        {
+          "widget-type": "keyvalue",
           "label": "Connection Arguments",
           "name": "connectionArguments",
           "widget-attributes": {
