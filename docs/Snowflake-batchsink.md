@@ -60,8 +60,8 @@ For more info see [Introduction to OAuth in Snowflake](https://docs.snowflake.ne
 
 ### Advanced
 
-**Maximum File Size:** Maximum size of temporary file in table stage used by plugin as temporary location,
-before populating the data to table.
+**Maximum File Size:** Maximum size in bytes of temporary file in stage used by plugin as temporary location,
+before populating the data to a table. If 0 files are not limited by size.
 
 **Copy Options:** List of arbitrary copy options. See 
 [Copy Options.](https://docs.snowflake.net/manuals/sql-reference/sql/copy-into-table.html#copy-options-copyoptions)
