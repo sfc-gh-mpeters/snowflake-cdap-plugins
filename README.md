@@ -1,9 +1,14 @@
 # Snowflake
+
 A collection of Snowflake connectors and plugins.
 
 Following plugins are available in this repository.
 
   * Snowflake Batch Source
+  * Snowflake Sink
+  * Snowflake Run SQL Action
+  * Snowflake Cloud Storage To Snowflake Action
+  * Snowflake Snowflake To Cloud Storage Action
 
 # Integration tests
 
