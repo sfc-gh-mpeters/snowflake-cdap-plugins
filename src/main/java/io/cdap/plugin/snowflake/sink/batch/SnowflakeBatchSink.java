@@ -33,6 +33,8 @@ import io.cdap.plugin.common.LineageRecorder;
 import org.apache.hadoop.io.NullWritable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 /**
@@ -88,7 +90,8 @@ public class SnowflakeBatchSink extends BatchSink<StructuredRecord, NullWritable
   }
 
   @Override
-  public void transform(StructuredRecord record, Emitter<KeyValue<NullWritable, CSVRecord>> emitter) {
+  public void transform(StructuredRecord record, Emitter<KeyValue<NullWritable, CSVRecord>> emitter)
+    throws IOException {
     CSVRecord csvRecord = transformer.transform(record);
     emitter.emit(new KeyValue<>(null, csvRecord));
   }

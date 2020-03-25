@@ -17,9 +17,11 @@ package io.cdap.plugin.snowflake.sink.batch;
 
 import io.cdap.cdap.api.data.format.StructuredRecord;
 import io.cdap.cdap.api.data.schema.Schema;
+import io.cdap.cdap.format.StructuredRecordStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -33,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class StructuredRecordToCSVRecordTransformer {
   private static final Logger LOG = LoggerFactory.getLogger(StructuredRecordToCSVRecordTransformer.class);
 
-  public CSVRecord transform(StructuredRecord record) {
+  public CSVRecord transform(StructuredRecord record) throws IOException {
     List<String> fieldNames = new ArrayList<>();
     List<String> values = new ArrayList<>();
 
@@ -56,7 +58,8 @@ public class StructuredRecordToCSVRecordTransformer {
    * @param record
    * @return string representing the value in format, which can be understood by Snowflake
    */
-  public static String convertSchemaFieldToString(Object value, Schema.Field field, StructuredRecord record) {
+  public static String convertSchemaFieldToString(Object value, Schema.Field field, StructuredRecord record)
+    throws IOException {
     // don't convert null to avoid NPE
     if (value == null) {
       return null;
@@ -97,6 +100,11 @@ public class StructuredRecordToCSVRecordTransformer {
           throw new IllegalArgumentException(
             String.format("Field '%s' is of unsupported type '%s'", field.getName(), logicalType.getToken()));
       }
+    }
+
+    if (fieldSchema.getType() == Schema.Type.RECORD) {
+      // json value can be saved into a variant
+      return StructuredRecordStringConverter.toJsonString((StructuredRecord) value);
     }
 
     return value.toString();
