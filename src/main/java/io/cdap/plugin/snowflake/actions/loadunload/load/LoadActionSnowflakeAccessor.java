@@ -19,6 +19,7 @@ package io.cdap.plugin.snowflake.actions.loadunload.load;
 import com.google.common.base.Strings;
 import io.cdap.plugin.snowflake.actions.loadunload.LoadUnloadSnowflakeAccessor;
 import io.cdap.plugin.snowflake.common.util.QueryUtil;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Accesses Snowflake API to copy table into stage.
@@ -38,7 +39,8 @@ public class LoadActionSnowflakeAccessor extends LoadUnloadSnowflakeAccessor {
 
     switch(config.getSourceType()) {
       case FROM_PATH:
-        sb.append(String.format(" %s", config.getSourcePath()));
+        sb.append(String.format(" %s", LoadUnloadSnowflakeAccessor.quotePathIfNeeded(
+          config.getSourcePath())));
         break;
       case FROM_QUERY:
         sb.append(String.format(" (%s)", QueryUtil.removeSemicolon(config.getSourceQuery())));
@@ -53,9 +55,22 @@ public class LoadActionSnowflakeAccessor extends LoadUnloadSnowflakeAccessor {
     }
 
     if (!Strings.isNullOrEmpty(config.getFiles())) {
-      sb.append(String.format(" FILES = '%s'", config.getFiles()));
+      sb.append(String.format(" FILES = ( %s )", quoteFilesString(config.getFiles())));
     }
 
     return sb;
+  }
+
+  private static String quoteFilesString(String files) {
+    StringBuilder sb = new StringBuilder();
+    for (String file : files.split(",")) {
+      String fileNameClean = StringUtils.strip(file.trim(), "'");
+      sb.append("'");
+      sb.append(fileNameClean);
+      sb.append("',");
+    }
+    sb.setLength(sb.length() - 1);
+
+    return sb.toString();
   }
 }

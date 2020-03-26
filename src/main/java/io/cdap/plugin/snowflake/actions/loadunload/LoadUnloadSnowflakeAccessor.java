@@ -133,4 +133,13 @@ public abstract class LoadUnloadSnowflakeAccessor extends SnowflakeAccessor {
     }
     return "";
   }
+
+  // According to Snowflake COPY syntax external paths must be quoted, while internal must not.
+  public static String quotePathIfNeeded(String path) {
+    if (path.startsWith("gcs://") || path.startsWith("azure://") ||
+      path.startsWith("s3://")) {
+      return "'" + path + "'";
+    }
+    return path;
+  }
 }

@@ -15,6 +15,8 @@
  */
 package io.cdap.plugin.snowflake.sink.batch;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import io.cdap.cdap.api.data.format.StructuredRecord;
 import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.cdap.format.StructuredRecordStringConverter;
@@ -102,9 +104,16 @@ public class StructuredRecordToCSVRecordTransformer {
       }
     }
 
+    // convert to json so it can be saved to Snowflake's variant
     if (fieldSchema.getType() == Schema.Type.RECORD) {
-      // json value can be saved into a variant
       return StructuredRecordStringConverter.toJsonString((StructuredRecord) value);
+    }
+
+    // convert to json so it can be saved to Snowflake's variant
+    if (fieldSchema.getType() == Schema.Type.ARRAY) {
+      String stringRecord = StructuredRecordStringConverter.toJsonString(record);
+      JsonElement jsonObject = new JsonParser().parse(stringRecord);
+      return jsonObject.getAsJsonObject().get(field.getName()).toString();
     }
 
     return value.toString();

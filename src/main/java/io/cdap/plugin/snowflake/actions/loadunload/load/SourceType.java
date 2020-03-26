@@ -22,7 +22,7 @@ import io.cdap.plugin.snowflake.actions.loadunload.EnumWithValue;
  * Source type for load action.
  */
 public enum SourceType implements EnumWithValue {
-  FROM_PATH("From Path"),
+  FROM_PATH("From Stage / Location"),
   FROM_QUERY("From Query");
 
   private final String value;

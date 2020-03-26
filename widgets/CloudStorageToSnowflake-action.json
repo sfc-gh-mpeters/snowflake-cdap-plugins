@@ -37,15 +37,15 @@
           "name": "sourceType",
           "widget-attributes": {
             "values": [
-              "From Path",
+              "From Stage / Location",
               "From Query"
             ],
-            "default": "From Path"
+            "default": "From Stage / Location"
           }
         },
         {
           "widget-type": "textbox",
-          "label": "Source Path",
+          "label": "Source Stage / Location",
           "name": "sourcePath"
         },
         {
@@ -339,7 +339,7 @@
       "condition": {
         "property": "sourceType",
         "operator": "equal to",
-        "value": "From Path"
+        "value": "From Stage / Location"
       },
       "show": [
         {

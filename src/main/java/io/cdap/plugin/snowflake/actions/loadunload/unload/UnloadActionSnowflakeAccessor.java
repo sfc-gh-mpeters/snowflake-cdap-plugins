@@ -33,7 +33,9 @@ public class UnloadActionSnowflakeAccessor extends LoadUnloadSnowflakeAccessor {
   }
 
   protected StringBuilder getQueryPrefix() {
-    StringBuilder sb = new StringBuilder(String.format(COPY_TABLE_INTO_STAGE, config.getDestinationPath()));
+    StringBuilder sb = new StringBuilder(String.format(COPY_TABLE_INTO_STAGE,
+                                                       LoadUnloadSnowflakeAccessor.quotePathIfNeeded(
+                                                         config.getDestinationPath())));
 
     switch(config.getSourceType()) {
       case FROM_TABLE:

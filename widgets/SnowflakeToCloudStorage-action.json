@@ -55,7 +55,7 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Destination Path",
+          "label": "Destination Stage / Location",
           "name": "destinationPath"
         }
       ]
