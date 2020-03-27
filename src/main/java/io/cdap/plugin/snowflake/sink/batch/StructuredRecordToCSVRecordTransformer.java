@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -115,7 +116,14 @@ public class StructuredRecordToCSVRecordTransformer {
         return jsonObject.getAsJsonObject().get(field.getName()).toString();
       // convert to hex which can be understood by Snowflake and saved to BINARY type
       case BYTES:
-        byte[] bytes = (byte[]) value;
+        byte[] bytes;
+        if (value instanceof ByteBuffer) {
+          ByteBuffer byteBuffer = (ByteBuffer) value;
+          bytes = new byte[byteBuffer.remaining()];
+        } else {
+          bytes = (byte[]) value;
+        }
+
         StringBuilder hexSb = new StringBuilder();
         for (byte b : bytes) {
           hexSb.append(String.format("%02X", b));
