@@ -120,6 +120,7 @@ public class StructuredRecordToCSVRecordTransformer {
         if (value instanceof ByteBuffer) {
           ByteBuffer byteBuffer = (ByteBuffer) value;
           bytes = new byte[byteBuffer.remaining()];
+          byteBuffer.get(bytes);
         } else {
           bytes = (byte[]) value;
         }
