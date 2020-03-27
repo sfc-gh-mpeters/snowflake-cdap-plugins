@@ -17,7 +17,6 @@
 package io.cdap.plugin.snowflake.source.batch;
 
 import com.google.common.base.Strings;
-import io.cdap.cdap.api.common.Bytes;
 import io.cdap.cdap.api.data.format.StructuredRecord;
 import io.cdap.cdap.api.data.format.UnexpectedFormatException;
 import io.cdap.cdap.api.data.schema.Schema;
@@ -58,7 +57,7 @@ public class SnowflakeMapToRecordTransformer {
     return builder.build();
   }
 
-  private Object convertValue(String fieldName, Object value, Schema fieldSchema) {
+  private Object convertValue(String fieldName, String value, Schema fieldSchema) {
     if (fieldSchema.isNullable()) {
       return convertValue(fieldName, value, fieldSchema.getNonNullable());
     }
@@ -93,7 +92,8 @@ public class SnowflakeMapToRecordTransformer {
       case NULL:
         return null;
       case BYTES:
-        return Bytes.toBytes(castValue(value, fieldName, String.class));
+        // decode hex value
+        return hexStringToByteArray(value);
       case BOOLEAN:
         return Boolean.parseBoolean(castValue(value, fieldName, String.class));
       case DOUBLE:
@@ -107,11 +107,21 @@ public class SnowflakeMapToRecordTransformer {
                       + "double, string'.", fieldSchema, fieldName));
   }
 
-  private <T> T castValue(Object value, String fieldName, Class<T> clazz) {
+  private static <T> T castValue(Object value, String fieldName, Class<T> clazz) {
     if (clazz.isAssignableFrom(value.getClass())) {
       return clazz.cast(value);
     }
     throw new UnexpectedFormatException(
       String.format("Field '%s' is not of expected type '%s'", fieldName, clazz.getSimpleName()));
+  }
+
+  private static byte[] hexStringToByteArray(String s) {
+    int len = s.length();
+    byte[] data = new byte[len / 2];
+    for (int i = 0; i < len; i += 2) {
+      data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+        + Character.digit(s.charAt(i + 1), 16));
+    }
+    return data;
   }
 }

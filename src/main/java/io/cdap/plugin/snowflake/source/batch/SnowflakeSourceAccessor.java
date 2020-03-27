@@ -54,7 +54,6 @@ public class SnowflakeSourceAccessor extends SnowflakeAccessor {
       "DATE_FORMAT='YYYY-MM-DD' " +
       "TIME_FORMAT='HH24:MI:SS' " +
       "TIMESTAMP_FORMAT='YYYY-MM-DD\"T\"HH24:MI:SSTZH:TZM' " +
-      "BINARY_FORMAT='UTF-8' " +
       "FIELD_OPTIONALLY_ENCLOSED_BY='\"' " +
       "NULL_IF='' " +
       "EMPTY_FIELD_AS_NULL=FALSE) " +

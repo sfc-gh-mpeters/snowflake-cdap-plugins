@@ -104,18 +104,25 @@ public class StructuredRecordToCSVRecordTransformer {
       }
     }
 
-    // convert to json so it can be saved to Snowflake's variant
-    if (fieldSchema.getType() == Schema.Type.RECORD) {
-      return StructuredRecordStringConverter.toJsonString((StructuredRecord) value);
+    switch (fieldSchema.getType()) {
+      // convert to json so it can be saved to Snowflake's variant
+      case RECORD:
+        return StructuredRecordStringConverter.toJsonString((StructuredRecord) value);
+      // convert to json so it can be saved to Snowflake's variant
+      case ARRAY:
+        String stringRecord = StructuredRecordStringConverter.toJsonString(record);
+        JsonElement jsonObject = new JsonParser().parse(stringRecord);
+        return jsonObject.getAsJsonObject().get(field.getName()).toString();
+      // convert to hex which can be understood by Snowflake and saved to BINARY type
+      case BYTES:
+        byte[] bytes = (byte[]) value;
+        StringBuilder hexSb = new StringBuilder();
+        for (byte b : bytes) {
+          hexSb.append(String.format("%02X", b));
+        }
+        return hexSb.toString();
+      default:
+        return value.toString();
     }
-
-    // convert to json so it can be saved to Snowflake's variant
-    if (fieldSchema.getType() == Schema.Type.ARRAY) {
-      String stringRecord = StructuredRecordStringConverter.toJsonString(record);
-      JsonElement jsonObject = new JsonParser().parse(stringRecord);
-      return jsonObject.getAsJsonObject().get(field.getName()).toString();
-    }
-
-    return value.toString();
   }
 }
