@@ -47,7 +47,7 @@
     <powermock.version>1.7.4</powermock.version>
     <guice.version>4.0</guice.version>
     <opencsv.version>2.4</opencsv.version>
-    <snowflake-jdbc.version>3.12.1</snowflake-jdbc.version>
+    <snowflake-jdbc.version>3.12.3</snowflake-jdbc.version>
     <snowflake-common.version>3.1.40</snowflake-common.version>
   </properties>
 
@@ -300,11 +300,6 @@
       <groupId>net.snowflake</groupId>
       <artifactId>snowflake-jdbc</artifactId>
       <version>${snowflake-jdbc.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>net.snowflake</groupId>
-      <artifactId>snowflake-common</artifactId>
-      <version>${snowflake-common.version}</version>
     </dependency>
 
     <dependency>
