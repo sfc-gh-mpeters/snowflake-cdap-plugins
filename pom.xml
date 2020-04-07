@@ -48,7 +48,6 @@
     <guice.version>4.0</guice.version>
     <opencsv.version>2.4</opencsv.version>
     <snowflake-jdbc.version>3.12.3</snowflake-jdbc.version>
-    <snowflake-common.version>3.1.40</snowflake-common.version>
   </properties>
 
   <repositories>
