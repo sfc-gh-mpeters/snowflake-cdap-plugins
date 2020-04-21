@@ -41,8 +41,10 @@ public class SnowflakeRecordWriter extends RecordWriter<NullWritable, CSVRecord>
   private final SnowflakeSinkConfig config;
   private final SnowflakeSinkAccessor snowflakeAccessor;
   private final String destinationStagePath;
+  private long totalWriteTime = 0;
 
   public SnowflakeRecordWriter(TaskAttemptContext taskAttemptContext) throws IOException {
+    LOG.info("SnowflakeRecordWriter a");
     Configuration conf = taskAttemptContext.getConfiguration();
     destinationStagePath = conf.get(SnowflakeOutputFormat.DESTINATION_STAGE_PATH_PROPERTY);
     String configJson = conf.get(
@@ -53,10 +55,12 @@ public class SnowflakeRecordWriter extends RecordWriter<NullWritable, CSVRecord>
     csvBuffer = new CSVBuffer(true);
     csvBufferSizeCheck = new CSVBuffer(false);
     snowflakeAccessor = new SnowflakeSinkAccessor(config);
+    LOG.info("SnowflakeRecordWriter b");
   }
 
   @Override
   public void write(NullWritable key, CSVRecord csvRecord) throws IOException {
+    long l = System.currentTimeMillis();
     csvBufferSizeCheck.reset();
     csvBufferSizeCheck.write(csvRecord);
 
@@ -65,19 +69,25 @@ public class SnowflakeRecordWriter extends RecordWriter<NullWritable, CSVRecord>
     }
 
     csvBuffer.write(csvRecord);
+    long diff = System.currentTimeMillis() - l;
+    totalWriteTime += diff;
   }
 
   private void submitCurrentBatch() throws IOException {
+    LOG.info("submitCurrentBatch a");
     if (csvBuffer.getRecordsCount() != 0) {
       InputStream csvInputStream = new ByteArrayInputStream(csvBuffer.getByteArray());
       snowflakeAccessor.uploadStream(csvInputStream, destinationStagePath);
 
       csvBuffer.reset();
     }
+    LOG.info("submitCurrentBatch b");
   }
 
   @Override
   public void close(TaskAttemptContext taskAttemptContext) throws IOException {
+    LOG.info(String.format("[Sink]Close a %d", totalWriteTime));
     submitCurrentBatch();
+    LOG.info("[Sink]Close b");
   }
 }

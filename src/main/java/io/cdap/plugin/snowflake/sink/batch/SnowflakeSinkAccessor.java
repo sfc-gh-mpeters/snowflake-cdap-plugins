@@ -54,18 +54,23 @@ public class SnowflakeSinkAccessor extends SnowflakeAccessor {
       connection.unwrap(SnowflakeConnection.class).uploadStream(stageDir,
                                                                 null,
                                                                 inputStream, filename, true);
+      LOG.info("uploadStream b");
     } catch (SQLException e) {
       throw new IOException(e);
     }
   }
 
   public void populateTable(String destinationStagePath) throws IOException {
+    LOG.info("populateTable a");
     String populateStatement = String.format(POPULATE_TABLE_STAGE, config.getTableName(),
                                              destinationStagePath, config.getCopyOptions());
     runSQL(populateStatement);
+    LOG.info("populateTable b");
   }
 
   public void removeDirectory(String path) throws IOException {
+    LOG.info("removeDirectory a");
     runSQL(String.format("remove %s", path));
+    LOG.info("removeDirectory b");
   }
 }

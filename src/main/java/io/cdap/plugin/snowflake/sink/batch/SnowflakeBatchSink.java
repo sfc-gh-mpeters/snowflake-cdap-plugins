@@ -89,10 +89,25 @@ public class SnowflakeBatchSink extends BatchSink<StructuredRecord, NullWritable
     this.transformer = new StructuredRecordToCSVRecordTransformer();
   }
 
+  private long totalTime = 0;
+  private long number = 0;
+
   @Override
   public void transform(StructuredRecord record, Emitter<KeyValue<NullWritable, CSVRecord>> emitter)
     throws IOException {
+    long l = System.currentTimeMillis();
     CSVRecord csvRecord = transformer.transform(record);
     emitter.emit(new KeyValue<>(null, csvRecord));
+    long time = System.currentTimeMillis() - l;
+    totalTime += time;
+    checkTime();
+  }
+  private void checkTime() {
+    number++;
+    if (number >= 100_000) {
+      LOG.info(String.format("[Si/TR] time: %d", totalTime));
+      number = 0;
+      totalTime = 0;
+    }
   }
 }

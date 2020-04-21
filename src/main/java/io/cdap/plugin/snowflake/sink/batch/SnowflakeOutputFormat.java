@@ -69,6 +69,7 @@ public class SnowflakeOutputFormat extends OutputFormat<NullWritable, CSVRecord>
 
       @Override
       public void commitJob(JobContext jobContext) throws IOException {
+        LOG.info("CommitJob a");
         Configuration conf = jobContext.getConfiguration();
         String configJson = conf.get(
           SnowflakeOutputFormatProvider.PROPERTY_CONFIG_JSON);
@@ -80,6 +81,7 @@ public class SnowflakeOutputFormat extends OutputFormat<NullWritable, CSVRecord>
         SnowflakeSinkAccessor snowflakeAccessor = new SnowflakeSinkAccessor(config);
         snowflakeAccessor.populateTable(destinationStagePath);
         snowflakeAccessor.removeDirectory(destinationStagePath);
+        LOG.info("CommitJob b");
       }
 
       @Override

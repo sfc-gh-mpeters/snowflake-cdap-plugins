@@ -25,6 +25,8 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,11 +39,14 @@ import java.util.stream.Collectors;
 public class SnowflakeInputFormat extends InputFormat {
 
   private static final Gson GSON = new GsonBuilder().create();
+  private static final Logger LOG = LoggerFactory.getLogger(SnowflakeInputFormat.class);
+
 
   @Override
   public List<InputSplit> getSplits(JobContext jobContext) throws IOException {
     SnowflakeSourceAccessor snowflakeAccessor = getSnowflakeAccessor(jobContext.getConfiguration());
     List<String> stageSplits = snowflakeAccessor.prepareStageSplits();
+    LOG.info(String.format("[So] %d splits", stageSplits.size()));
     return stageSplits.stream()
       .map(SnowflakeSplit::new)
       .collect(Collectors.toList());

@@ -32,6 +32,8 @@ import io.cdap.cdap.etl.api.batch.BatchSourceContext;
 import io.cdap.plugin.common.LineageRecorder;
 import io.cdap.plugin.snowflake.common.util.SchemaHelper;
 import org.apache.hadoop.io.NullWritable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 @Name(SnowflakeBatchSource.NAME)
 @Description("Read data from Snowflake.")
 public class SnowflakeBatchSource extends BatchSource<NullWritable, Map<String, String>, StructuredRecord> {
+  private static final Logger LOG = LoggerFactory.getLogger(SnowflakeBatchSource.class);
 
   public static final String NAME = "Snowflake";
 
@@ -96,10 +99,25 @@ public class SnowflakeBatchSource extends BatchSource<NullWritable, Map<String, 
     this.transformer = new SnowflakeMapToRecordTransformer(schema);
   }
 
+  private long totalTime = 0;
+  private long number = 0;
+
   @Override
   public void transform(KeyValue<NullWritable, Map<String, String>> input,
                         Emitter<StructuredRecord> emitter) {
+    long l = System.currentTimeMillis();
     StructuredRecord record = transformer.transform(input.getValue());
     emitter.emit(record);
+    long time = System.currentTimeMillis() - l;
+    totalTime += time;
+    checkTime();
+  }
+  private void checkTime() {
+    number++;
+    if (number >= 100_000) {
+      LOG.info(String.format("[So/TR] time: %d", totalTime));
+      number = 0;
+      totalTime = 0;
+    }
   }
 }

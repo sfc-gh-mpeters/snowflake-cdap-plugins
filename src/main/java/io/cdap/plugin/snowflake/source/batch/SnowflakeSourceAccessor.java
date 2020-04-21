@@ -82,13 +82,17 @@ public class SnowflakeSourceAccessor extends SnowflakeAccessor {
     try (Connection connection = dataSource.getConnection();
          PreparedStatement copyStmt = connection.prepareStatement(copy);
          PreparedStatement listStmt = connection.prepareStatement("list " + STAGE_PATH)) {
+      LOG.info("prepareStageSplits a");
       copyStmt.execute();
+      LOG.info("prepareStageSplits b");
       try (ResultSet resultSet = listStmt.executeQuery()) {
+        LOG.info("prepareStageSplits c");
         while (resultSet.next()) {
           String name = resultSet.getString("name");
           stageSplits.add(name);
         }
       }
+      LOG.info("prepareStageSplits d");
     } catch (SQLException e) {
       throw new IOException(e);
     }
@@ -112,11 +116,17 @@ public class SnowflakeSourceAccessor extends SnowflakeAccessor {
    * @throws IOException thrown if there are any issue with the I/O operations.
    */
   public CSVReader buildCsvReader(String stageSplit) throws IOException {
+    LOG.info("buildCsvReader a");
     try (Connection connection = dataSource.getConnection()) {
+      LOG.info("buildCsvReader b");
       InputStream downloadStream = connection.unwrap(SnowflakeConnection.class)
         .downloadStream("@~", stageSplit, true);
+      LOG.info("buildCsvReader c");
       InputStreamReader inputStreamReader = new InputStreamReader(downloadStream);
-      return new CSVReader(inputStreamReader);
+      LOG.info("buildCsvReader d");
+      CSVReader csvReader = new CSVReader(inputStreamReader);
+      LOG.info("buildCsvReader e");
+      return  csvReader;
     } catch (SQLException e) {
       throw new IOException(e);
     }
