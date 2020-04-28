@@ -46,6 +46,7 @@ import java.util.Properties;
  * A class which accesses Snowflake API.
  */
 public class SnowflakeAccessor {
+  private static final String APPLICATION_NAME = "CDAP";
   private static final int LIMIT_ROWS = 5;
 
   private final BaseSnowflakeConfig config;
@@ -154,6 +155,7 @@ public class SnowflakeAccessor {
       for (KeyValue<String, String> argument : KeyValueListParser.DEFAULT.parse(connectionArguments)) {
         properties.setProperty(argument.getKey(), argument.getValue());
       }
+      properties.setProperty("application", APPLICATION_NAME);
     } catch (NoSuchFieldException | IllegalAccessException e) {
       throw new IllegalArgumentException(
         String.format("Cannot set connection arguments '%s'.", connectionArguments), e);
