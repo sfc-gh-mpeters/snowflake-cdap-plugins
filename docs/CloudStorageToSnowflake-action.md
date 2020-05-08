@@ -23,11 +23,11 @@ log in to Snowflake, minus the "snowflakecomputing.com"). E.g. "myaccount.us-cen
 
 **Schema:** Schema that contains the target table.
 
-**Warehouse:** Warehouse to use for the data load.
+**Warehouse:** Warehouse to use for the data load operation (i.e. compute resources).
 
 **Role:** Role to use (e.g. `ACCOUNTADMIN`).
 
-**Source Type:** The method used to reference the staged data. Possible values: `From Path`, `From Query`.
+**Source Type:** The source of the data to load. Possible values: `From Path`, `From Query`.
 
 **Source Path:** Internal or external location where the files containing data are staged.
 
@@ -58,7 +58,7 @@ SELECT name, address, phone from s3://bucket/path
 
 ### Credentials
 
-**Username:** User identity for connecting to your Snowflake account.
+**Username:** Username to use to connect to your Snowflake account.
 
 **Password:** Password to use to connect to your Snowflake account. Not necessary for key pair or OAuth2 authentication.
 
