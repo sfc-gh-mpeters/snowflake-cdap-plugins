@@ -3,9 +3,7 @@
 
 Description
 -----------
-Runs an arbitrary SQL query on Snowflake. Snowflake is an analytic data warehouse provided as 
-Software-as-a-Service (SaaS). Snowflake provides a data warehouse that is faster, easier to use, and far more 
-flexible than traditional data warehouse offerings.
+Runs a specified SQL query in [Snowflake](https://www.snowflake.com/).
 
 Configuration
 -------------
@@ -17,11 +15,11 @@ Configuration
 **Account Name:** Snowflake account name and region and possibly a cloud specifier. (Part of the URL you use to 
 log in to Snowflake, minus the "snowflakecomputing.com"). E.g. "myaccount.us-central1.gcp".
 
-**Database:** Database name to connect to.
+**Database:** Database that contains the table to query.
 
-**Schema:** Schema name to connect to.
+**Schema:** Schema that contains the table to query.
 
-**Warehouse:** Warehouse to connect to.
+**Warehouse:** Warehouse that provides the compute resources.
 
 **Role:** Role to use (e.g. `ACCOUNTADMIN`).
 
@@ -29,13 +27,13 @@ log in to Snowflake, minus the "snowflakecomputing.com"). E.g. "myaccount.us-cen
 
 ### Credentials
 
-**Username:** User identity for connecting to the specified database.
+**Username:** Username to use to connect to your Snowflake account.
 
-**Password:** Password to use to connect to the specified database. Not necessary for Key Pair or OAuth2 authentication.
+**Password:** Password to use to connect to your Snowflake account. Not necessary for key pair or OAuth2 authentication.
 
 ### Key Pair Authentication
 
-**Key Pair Authentication Enabled:** If true, plugin will perform Key Pair authentication.
+**Key Pair Authentication Enabled:** If true, plugin will perform key pair authentication.
 
 **Private Key:** Private key contents.
 
